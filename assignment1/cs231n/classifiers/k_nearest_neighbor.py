@@ -104,7 +104,9 @@ class KNearestNeighbor(object):
     # HINT: Try to formulate the l2 distance using matrix multiplication    #
     #       and two broadcast sums.                                         #
     #########################################################################
-    pass
+    dists = np.sqrt( np.tile(np.sum(np.square(X),axis=1),(num_train,1)).T +
+                     np.tile(np.sum(np.square(self.X_train.T),axis=0),(num_test,1)) - 
+                     2*X.dot(self.X_train.T) )
     #########################################################################
     #                         END OF YOUR CODE                              #
     #########################################################################
