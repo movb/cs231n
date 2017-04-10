@@ -35,8 +35,14 @@ def svm_loss_naive(W, X, y, reg):
       margin = scores[j] - correct_class_score + 1 # note delta = 1
       if margin > 0:
         loss += margin
-    grad = ((X[i].dot(W) - X[i].dot(W[:,y[i]]) + 1) > 0)*X[i].reshape(X[i].shape[0],1)
-    grad[:,y[i]] = -(np.sum((X[i].dot(W) - X[i].dot(W[:,y[i]]) + 1) > 0) - 1)*X[i]
+    #print(W.shape)
+    #print(W.T.dot(X[i]).shape)
+    #print(W[:,y[i]].T.dot(X[i]).shape)
+    #print(X[i].T.shape)
+    grad = ((W.T.dot(X[i]) - W[:,y[i]].T.dot(X[i]) + 1.0) > 0) * X[i].reshape(X[i].shape[0],1)
+    grad[:,y[i]] = -(np.sum((W.T.dot(X[i]) - W[:,y[i]].T.dot(X[i]) + 1.0) > 0) - 1.0)*X[i]
+    #grad = ((X[i].dot(W) - X[i].dot(W[:,y[i]]) + 1) > 0)*X[i].reshape(X[i].shape[0],1)
+    #grad[:,y[i]] = -(np.sum((X[i].dot(W) - X[i].dot(W[:,y[i]]) + 1) > 0) - 1)*X[i]
     dW += grad 
 
   # Right now the loss is a sum over all training examples, but we want it
@@ -46,7 +52,7 @@ def svm_loss_naive(W, X, y, reg):
 
   # Add regularization to the loss.
   loss += 0.5 * reg * np.sum(W * W)
-  dW += reg*np.sum(W)
+  dW += reg * W
 
   #############################################################################
   # TODO:                                                                     #
@@ -104,6 +110,7 @@ def svm_loss_vectorized(W, X, y, reg):
   temp = ((X.dot(W) - np.sum(X*W[:, y].T,axis=1).reshape(y.shape[0],1) + 1) > 0)
   temp[np.arange(temp.shape[0]),y] = -(np.sum((X.dot(W) - np.sum(X*W[:, y].T,axis=1).reshape(y.shape[0],1) + 1) > 0, axis=1) - 1)
   dW = X.T.dot(temp)
+  dW += reg*W
   #dW[np.arange(dW.shape[0]),y] = -np.sum((X.dot(W) - np.sum(X*W[:, y].T,axis=1).reshape(y.shape[0],1) + 1) > 0, axis=1).T.dot(X)
   #############################################################################
   #                             END OF YOUR CODE                              #
