@@ -97,7 +97,7 @@ def svm_loss_vectorized(W, X, y, reg):
   # loss.                                                                     #
   #############################################################################
   temp = (margins > 0).astype(int)
-  temp[range(temp.shape[0]),y] = -np.sum(margins > 0, axis=1) + 1
+  temp[range(temp.shape[0]),y] = -np.sum(temp, axis=1) + 1
   dW = X.T.dot(temp)/float(num_train)
   dW += reg*W
   #############################################################################
