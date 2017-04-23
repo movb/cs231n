@@ -29,7 +29,30 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+    
+  # compute the loss and the gradient
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
+  h = 0.0001
+  for i in range(num_train):
+    scores = X[i].dot(W)
+    correct_class_score = scores[y[i]]
+    
+    loss += -np.log(np.exp(correct_class_score)/np.sum(np.exp(scores)))
+    for j in range(num_classes):
+      if j == y[i]:
+        dW[:,j] += (np.exp(correct_class_score)/np.sum(np.exp(scores)) - 1)*X[i]
+      else:
+        dW[:,j] += np.exp(scores[j])/np.sum(np.exp(scores))*X[i]
+
+  # Right now the loss is a sum over all training examples, but we want it
+  # to be an average instead so we divide by num_train.
+  loss /= num_train
+  dW /= num_train
+
+  # Add regularization to the loss.
+  loss += 0.5 * reg * np.sum(W * W)
+  dW += reg * W
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
@@ -53,7 +76,17 @@ def softmax_loss_vectorized(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
+  scores = X.dot(W)
+  correct_class_score = scores[range(num_train), y]
+  loss = np.sum(-np.log(np.exp(correct_class_score)/np.sum(np.exp(scores),axis=1))) / num_train 
+  loss += 0.5 * reg * np.sum(W * W)
+ 
+  temp = np.exp(scores)/np.sum(np.exp(scores),axis=1).reshape(num_train,1)
+  temp[range(temp.shape[0]),y] = (np.exp(correct_class_score)/np.sum(np.exp(scores),axis=1) - 1)
+  dW = X.T.dot(temp)/num_train
+  dW += reg*W
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
