@@ -80,7 +80,6 @@ class TwoLayerNet(object):
     ############################################################################
     W1, b1 = self.params['W1'], self.params['b1']
     W2, b2 = self.params['W2'], self.params['b2']
-    N, D = X.shape
     
     out, cache1 = affine_relu_forward(X, W1, b1)
     scores, cache2 = affine_forward(out, W2, b2)
