@@ -171,7 +171,15 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # the momentum variable to update the running mean and running variance,    #
     # storing your result in the running_mean and running_var variables.        #
     #############################################################################
-    pass
+    sample_mean = x.mean(axis=0)
+    sample_std = x.std(axis=0)
+    sample_var = sample_std**2
+    running_mean = momentum * running_mean + (1 - momentum) * sample_mean
+    running_var = momentum * running_var + (1 - momentum) * sample_var
+    
+    x_hat = (x-sample_mean)/sample_std
+    out = gamma*x_hat + beta
+    cache = (x, sample_mean, sample_std, gamma, beta)
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -182,7 +190,8 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # and shift the normalized data using gamma and beta. Store the result in   #
     # the out variable.                                                         #
     #############################################################################
-    pass
+    x_hat = (x-running_mean)/np.sqrt(running_var)
+    out = gamma*x_hat + beta
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -218,7 +227,12 @@ def batchnorm_backward(dout, cache):
   # TODO: Implement the backward pass for batch normalization. Store the      #
   # results in the dx, dgamma, and dbeta variables.                           #
   #############################################################################
-  pass
+  x, sample_mean, sample_std, gamma, beta = cache
+  x_hat = (x-sample_mean)/sample_std
+    
+  dbeta = dout
+  dgamma = np.sum(x_hat*dout,axis=0)
+  dx = beta/sample_std*x
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
